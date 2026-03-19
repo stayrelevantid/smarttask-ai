@@ -1023,6 +1023,55 @@ const progress = getGoalProgress(goal.id); // Progress akurat untuk semua goal
 
 ---
 
+#### Session 25: Security Fix - Remove Exposed Credentials
+**Started**: 07:00 PM  
+**Status**: 🚨 CRITICAL - COMPLETED
+
+**Issue Discovered**:  
+File `k8s/config.yaml` tercommit ke git dengan **credentials asli**:
+- Supabase URL
+- Supabase Publishable Key  
+- Google Gemini API Key
+
+**Impact**: Credentials exposed in git history (commits 850589c dan 2f7b58d)
+
+**Solution**:
+1. ✅ Added `k8s/config.yaml` to .gitignore
+2. ✅ Removed file from git tracking (`git rm --cached`)
+3. ✅ Overwrote local file with placeholder values
+4. ✅ Created `k8s/config.example.yaml` template
+5. ✅ Updated README dengan security instructions
+
+**Files Modified**:
+- `.gitignore` - Added k8s/config.yaml exclusion
+- `k8s/config.yaml` - Overwritten dengan placeholder values (removed from git)
+- `k8s/config.example.yaml` - Created template file
+- `README.md` - Updated dengan security instructions
+
+**Files Created**:
+- `k8s/config.example.yaml` - Template untuk setup Kubernetes
+
+**ACTION REQUIRED**:
+🚨 **ROTATE ALL API KEYS IMMEDIATELY**:
+1. Supabase Dashboard → Project Settings → API → Regenerate keys
+2. Google Cloud Console → APIs & Services → Credentials → Regenerate Gemini API key
+
+**Prevention**:
+```bash
+# Setup Kubernetes (NEVER commit k8s/config.yaml)
+cp k8s/config.example.yaml k8s/config.yaml
+# Edit k8s/config.yaml dengan credentials asli
+# File ini otomatis di-ignore oleh git
+```
+
+**Security Best Practices**:
+- ✅ k8s/config.yaml di-gitignore
+- ✅ hanya k8s/config.example.yaml yang di-track
+- ✅ Credentials tidak pernah di-commit ke repo
+- ✅ Template menyediakan struktur tanpa data sensitif
+
+---
+
 ## Final Summary
 
 ### Project Completion Date: 2025-03-19
@@ -1056,6 +1105,13 @@ const progress = getGoalProgress(goal.id); // Progress akurat untuk semua goal
 ### Bug Fixes Applied
 1. ✅ Language toggle state sharing (Session 23 fix)
 2. ✅ Sidebar progress animation persistence (Session 24)
+
+### Security Fixes
+3. 🚨 **CRITICAL**: Removed exposed credentials from k8s/config.yaml
+   - Credentials were accidentally committed to git (Supabase URL, API keys)
+   - Added k8s/config.yaml to .gitignore
+   - Created k8s/config.example.yaml template
+   - **ACTION REQUIRED**: Rotate all exposed API keys immediately
 
 ### Deployment Status
 - ✅ Local development: Working
