@@ -29,6 +29,16 @@ spec:
             secretKeyRef:
               name: smarttask-secrets
               key: supabase-publishable-key
+        - name: VITE_GOOGLE_API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: smarttask-secrets
+              key: google-api-key
+        - name: VITE_AI_MODEL
+          valueFrom:
+            configMapKeyRef:
+              name: smarttask-config
+              key: ai-model
         livenessProbe:
           httpGet:
             path: /

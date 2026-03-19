@@ -5,6 +5,7 @@ metadata:
   namespace: default
 data:
   supabase-url: "https://your-project.supabase.co"
+  ai-model: "gemini-1.5-flash"
 ---
 apiVersion: v1
 kind: Secret
