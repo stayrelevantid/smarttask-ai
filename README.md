@@ -259,6 +259,7 @@ metadata:
   name: smarttask-config
 data:
   supabase-url: "https://your-project.supabase.co"
+  ai-model: "gemini-1.5-flash"  # Optional: defaults to gemini-1.5-flash
 
 ---
 # Secret - For sensitive data
@@ -269,11 +270,15 @@ metadata:
 type: Opaque
 stringData:
   supabase-publishable-key: "your-publishable-key-here"
+  google-api-key: "your-google-api-key-here"  # Required for AI features
 ```
 
 Then apply:
 ```bash
 kubectl apply -f k8s/config.yaml
+kubectl apply -f k8s/deployment.yaml
+kubectl apply -f k8s/service.yaml
+kubectl apply -f k8s/ingress.yaml
 ```
 
 ## Development Phases
