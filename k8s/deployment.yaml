@@ -1,0 +1,54 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: smarttask-ai
+  namespace: default
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: smarttask-ai
+  template:
+    metadata:
+      labels:
+        app: smarttask-ai
+    spec:
+      containers:
+      - name: smarttask-ai
+        image: smarttask-ai:latest
+        ports:
+        - containerPort: 80
+        env:
+        - name: VITE_SUPABASE_URL
+          valueFrom:
+            configMapKeyRef:
+              name: smarttask-config
+              key: supabase-url
+        - name: VITE_SUPABASE_PUBLISHABLE_DEFAULT_KEY
+          valueFrom:
+            secretKeyRef:
+              name: smarttask-secrets
+              key: supabase-publishable-key
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 80
+          initialDelaySeconds: 10
+          periodSeconds: 30
+          timeoutSeconds: 5
+          failureThreshold: 3
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 80
+          initialDelaySeconds: 5
+          periodSeconds: 10
+          timeoutSeconds: 3
+          failureThreshold: 3
+        resources:
+          requests:
+            memory: "128Mi"
+            cpu: "100m"
+          limits:
+            memory: "256Mi"
+            cpu: "200m"
