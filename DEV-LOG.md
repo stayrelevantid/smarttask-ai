@@ -1142,15 +1142,134 @@ env:
 
 ---
 
+#### Session 27: K3D Deployment Test
+**Started**: 07:30 PM  
+**Status**: ✅ COMPLETED - DEPLOYMENT SUCCESSFUL
+
+**Objective**: Test deployment to k3d Kubernetes cluster
+
+**Deployment Steps**:
+
+1. ✅ **Prerequisites Check**
+   - k3d: ✅ Installed
+   - kubectl: ✅ Installed
+   - Docker: ✅ Running (v25.0.3)
+
+2. ✅ **Create k3d Cluster**
+   ```bash
+   k3d cluster create smarttask -p "8080:80@loadbalancer"
+   ```
+   - 1 server node
+   - LoadBalancer with port mapping 8080:80
+   - Cluster name: smarttask
+
+3. ✅ **Build Docker Image**
+   ```bash
+   docker build -t smarttask-ai:latest .
+   ```
+   - Multi-stage build successful
+   - Final image size: ~828 KiB
+   - PWA service worker generated
+
+4. ✅ **Import Image to k3d**
+   ```bash
+   k3d image import smarttask-ai:latest -c smarttask
+   ```
+   - Image imported successfully to cluster
+
+5. ✅ **Apply Kubernetes Manifests**
+   ```bash
+   kubectl apply -f k8s/config.yaml
+   kubectl apply -f k8s/deployment.yaml
+   kubectl apply -f k8s/service.yaml
+   kubectl apply -f k8s/ingress.yaml
+   ```
+
+6. ⚠️ **Bug Discovered & Fixed**
+   - Issue: Pods showing `ErrImagePull` error
+   - Root Cause: Missing `imagePullPolicy` in deployment
+   - Kubernetes trying to pull from Docker Hub instead of using local image
+   
+   **Fix Applied**:
+   ```yaml
+   containers:
+   - name: smarttask-ai
+     image: smarttask-ai:latest
+     imagePullPolicy: IfNotPresent  # ← ADDED
+   ```
+
+7. ✅ **Verify Deployment**
+   ```bash
+   kubectl get pods -l app=smarttask-ai
+   # NAME                            READY   STATUS    RESTARTS   AGE
+   # smarttask-ai-57bf764d57-dkwsz   1/1     Running   0          74s
+   # smarttask-ai-57bf764d57-kprfk   1/1     Running   0          74s
+   ```
+
+8. ✅ **Test Application**
+   ```bash
+   curl -H "Host: smarttask.local" http://localhost:8080
+   # Returns: 200 OK with HTML content ✅
+   ```
+
+**Files Modified**:
+- `k8s/deployment.yaml` - Added `imagePullPolicy: IfNotPresent`
+
+**Deployment Status**:
+- ✅ Cluster: smarttask (k3d)
+- ✅ Image: smarttask-ai:latest
+- ✅ Pods: 2/2 Running
+- ✅ Service: Active
+- ✅ Ingress: Active at smarttask.local
+
+**Access Information**:
+```
+URL: http://smarttask.local:8080
+      (or http://localhost:8080 with Host header)
+
+Prerequisites for browser access:
+1. Add to /etc/hosts:
+   127.0.0.1 smarttask.local
+
+2. Open browser:
+   http://smarttask.local:8080
+```
+
+**Useful Commands**:
+```bash
+# View logs
+kubectl logs -l app=smarttask-ai --tail=100
+
+# Scale deployment
+kubectl scale deployment smarttask-ai --replicas=3
+
+# Port forward for direct access
+kubectl port-forward svc/smarttask-ai 8080:80
+
+# Delete cluster when done
+k3d cluster delete smarttask
+```
+
+**Important Notes**:
+- ⚠️ k8s/config.yaml contains placeholder values
+- ⚠️ App loads but AI features need real credentials
+- ⚠️ Update k8s/config.yaml with actual API keys for full functionality
+
+**Git Commit**:
+- `0a085d6` - fix(k8s): Add imagePullPolicy to deployment
+
+---
+
 ## Final Summary
 
 ### Project Completion Date: 2025-03-19
 
-### Total Sessions: 26
+### Total Sessions: 27
 - Phase 1: 8 sessions (Foundation)
 - Phase 2: 4 sessions (Database & Auth)
 - Phase 3: 12 sessions (AI Integration & Polish)
 - Bug Fixes: 2 sessions (Sessions 25-26)
+- Deployment: 1 session (Session 27)
 
 ### Final Statistics
 - **Total Files**: 63
