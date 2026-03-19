@@ -14,3 +14,4 @@ metadata:
 type: Opaque
 stringData:
   supabase-publishable-key: "your-publishable-key-here"
+  google-api-key: "your-google-api-key-here"
