@@ -13,6 +13,7 @@ SmartTask AI leverages Generative AI to decompose high-level goals into actionab
 - **Smart Deduplication**: AI automatically removes duplicate and redundant tasks
 - **Effort Estimation**: Automatic time estimation (15-240 minutes) for each task
 - **Task Refinement**: Chat-based interface to adjust AI-generated tasks
+- **Multi-language Support**: AI generates tasks in English or Indonesian based on user preference
 
 ### ✅ Task Management
 - **Sequential Completion**: Tasks must be completed in order (top to bottom)
@@ -34,6 +35,12 @@ SmartTask AI leverages Generative AI to decompose high-level goals into actionab
 ### 📱 PWA Support
 - **Offline-capable**: Progressive Web App functionality
 - **Responsive Design**: Works on desktop and mobile
+
+### 🌐 Internationalization
+- **Language Toggle**: Switch between English and Indonesian
+- **Context API**: Shared language state across all components
+- **AI Language Consistency**: Tasks generated in selected language
+- **UI Translation**: All interface elements translated
 
 ### 🎨 UI/UX
 - **Modern Interface**: Built with shadcn/ui and Tailwind CSS
@@ -118,13 +125,25 @@ smarttask-ai/
 ├── src/
 │   ├── components/
 │   │   ├── ui/            # shadcn/ui primitives
+│   │   ├── auth/          # AuthPage, AuthForm, GoogleAuthButton
 │   │   ├── dashboard/     # ProgressHeader
-│   │   └── tasks/         # TaskItem, TaskInput, AIRefiner
+│   │   ├── goals/         # DeleteGoalDialog
+│   │   └── tasks/         # TaskItem, TaskInput, AIRefiner, etc.
+│   ├── hooks/             # Custom hooks
+│   │   ├── useAuth.tsx    # Authentication context
+│   │   ├── useLanguage.tsx # Language context (i18n)
+│   │   ├── useAllTasks.ts # All tasks for progress
+│   │   ├── useGoals.ts    # Goals management
+│   │   ├── useTasks.ts    # Tasks management
+│   │   └── useAIIntegration.ts # AI service
 │   ├── store/             # Zustand store
-│   ├── lib/               # Supabase client, utilities
+│   ├── lib/               # Supabase client, utilities, AI service
 │   ├── types/             # TypeScript definitions
 │   ├── App.tsx            # Main application
 │   └── main.tsx           # Entry point
+├── supabase/              # Database schema
+│   ├── schema.sql         # Main schema
+│   └── migrations/        # Database migrations
 ├── Dockerfile             # Multi-stage build
 ├── nginx.conf             # Nginx configuration
 └── vite.config.ts         # Vite + PWA config
@@ -209,12 +228,12 @@ cp .env.example .env
 # Required
 VITE_SUPABASE_URL=https://your-project.supabase.co
 VITE_SUPABASE_PUBLISHABLE_DEFAULT_KEY=your-publishable-key-here
+VITE_GOOGLE_API_KEY=your-google-api-key-here
 
-# Optional / Future Use
+# Optional
+VITE_AI_MODEL=gemini-1.5-flash
 VITE_APP_NAME=SmartTask AI
 VITE_APP_VERSION=0.1.0
-# VITE_OPENAI_API_KEY=your-openai-api-key
-# VITE_ENABLE_AI_FEATURES=true
 ```
 
 **Note**: `.env` is gitignored. Never commit actual credentials to version control.
@@ -281,6 +300,13 @@ kubectl apply -f k8s/config.yaml
 - Error boundaries
 - Loading skeletons
 
+### Phase 5: Internationalization ✅
+- Language toggle (English/Indonesian)
+- Context API for state sharing
+- AI task generation in selected language
+- UI translation system
+- Bug fixes for state synchronization
+
 **Status**: ✅ **ALL PHASES COMPLETE** - Production Ready!
 
 ## Contributing
@@ -295,10 +321,23 @@ kubectl apply -f k8s/config.yaml
 
 MIT License - see LICENSE file for details
 
+## Recent Updates
+
+### March 19, 2025
+
+#### 🐛 Bug Fixes
+- **Language Toggle State**: Fixed issue where language changes required page refresh. Now uses React Context API for instant state sharing.
+- **Progress Animation**: Fixed sidebar progress bars disappearing when switching goals. Added `useAllTasks` hook to maintain progress visibility for all goals.
+
+#### ✨ New Features
+- **Bilingual Support**: Full UI translation between English and Indonesian
+- **AI Language Consistency**: Tasks generated in user's selected language
+- **Context API Implementation**: Shared language state across all components
+
 ## Support
 
 For issues and feature requests, please use the GitHub issue tracker.
 
 ---
 
-Built with ❤️ using React 19, Zustand, and Supabase
+Built with ❤️ using React 19, TypeScript, Zustand, Supabase, and Google Gemini AI
