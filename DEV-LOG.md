@@ -1072,15 +1072,85 @@ cp k8s/config.example.yaml k8s/config.yaml
 
 ---
 
+#### Session 26: Fix Kubernetes Missing Environment Variables
+**Started**: 07:15 PM  
+**Status**: ✅ COMPLETED
+
+**Issue Discovered**:  
+Kubernetes manifests missing required environment variables for AI integration:
+- `VITE_GOOGLE_API_KEY` - Not referenced in deployment.yaml
+- `VITE_AI_MODEL` - Not defined in ConfigMap
+
+**Impact**: AI features wouldn't work in Kubernetes deployment
+
+**Solution**:
+1. ✅ Updated `k8s/config.example.yaml`:
+   - Added `ai-model` field to ConfigMap
+   - Added `google-api-key` field to Secret
+
+2. ✅ Updated `k8s/deployment.yaml`:
+   - Added environment variable mapping for `VITE_GOOGLE_API_KEY`
+   - Added environment variable mapping for `VITE_AI_MODEL`
+
+3. ✅ Updated local `k8s/config.yaml` (gitignored)
+
+4. ✅ Updated README.md with complete example
+
+**Files Modified**:
+- `k8s/config.example.yaml` - Added ai-model and google-api-key fields
+- `k8s/deployment.yaml` - Added env var references
+- `k8s/config.yaml` - Updated locally (gitignored)
+- `README.md` - Updated documentation
+
+**Kubernetes Config Structure**:
+```yaml
+# ConfigMap (non-sensitive)
+data:
+  supabase-url: "https://your-project.supabase.co"
+  ai-model: "gemini-1.5-flash"  # Optional
+
+# Secret (sensitive)
+stringData:
+  supabase-publishable-key: "your-key"
+  google-api-key: "your-key"  # Required for AI
+```
+
+**Deployment Environment Variables**:
+```yaml
+env:
+  - name: VITE_SUPABASE_URL
+    valueFrom:
+      configMapKeyRef:
+        name: smarttask-config
+        key: supabase-url
+  - name: VITE_SUPABASE_PUBLISHABLE_DEFAULT_KEY
+    valueFrom:
+      secretKeyRef:
+        name: smarttask-secrets
+        key: supabase-publishable-key
+  - name: VITE_GOOGLE_API_KEY  # NEW
+    valueFrom:
+      secretKeyRef:
+        name: smarttask-secrets
+        key: google-api-key
+  - name: VITE_AI_MODEL  # NEW
+    valueFrom:
+      configMapKeyRef:
+        name: smarttask-config
+        key: ai-model
+```
+
+---
+
 ## Final Summary
 
 ### Project Completion Date: 2025-03-19
 
-### Total Sessions: 24
+### Total Sessions: 26
 - Phase 1: 8 sessions (Foundation)
 - Phase 2: 4 sessions (Database & Auth)
 - Phase 3: 12 sessions (AI Integration & Polish)
-- Bug Fixes: 2 sessions
+- Bug Fixes: 2 sessions (Sessions 25-26)
 
 ### Final Statistics
 - **Total Files**: 63
