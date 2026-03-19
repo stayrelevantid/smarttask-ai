@@ -240,7 +240,16 @@ VITE_APP_VERSION=0.1.0
 
 ### Kubernetes Deployment
 
-For k3d/Kubernetes deployment, update `k8s/config.yaml` with your credentials:
+⚠️ **IMPORTANT**: `k8s/config.yaml` is gitignored and contains sensitive credentials. Never commit this file!
+
+For k3d/Kubernetes deployment:
+
+1. Copy the example config:
+```bash
+cp k8s/config.example.yaml k8s/config.yaml
+```
+
+2. Update `k8s/config.yaml` with your credentials:
 
 ```yaml
 # ConfigMap - Safe for non-sensitive data
