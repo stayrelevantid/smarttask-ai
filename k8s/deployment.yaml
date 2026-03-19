@@ -16,6 +16,7 @@ spec:
       containers:
       - name: smarttask-ai
         image: smarttask-ai:latest
+        imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 80
         env:
